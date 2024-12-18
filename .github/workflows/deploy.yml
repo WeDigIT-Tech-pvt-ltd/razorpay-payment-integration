@@ -45,11 +45,11 @@ jobs:
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
 
+          # Connect to EC2 and deploy
           ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-          
-          # Install git and pm2 if not already installed
+          # Install git and pm2 if not already installed using yum
           if ! command -v git &> /dev/null; then
-            sudo apt-get update && sudo apt-get install -y git
+            sudo yum update -y && sudo yum install -y git
           fi
           if ! command -v pm2 &> /dev/null; then
             sudo npm install -g pm2
@@ -59,16 +59,22 @@ jobs:
           mkdir -p $APP_PATH
           cd $APP_PATH
 
+          # Initialize git repository if not already done
+          if [ ! -d ".git" ]; then
+            git init
+            git remote add origin git@github.com:<your-repo-owner>/<your-repo-name>.git
+          fi
+
           # Pull the latest changes
           git pull origin main
 
           # Install dependencies with pnpm
           pnpm install --prod
 
-          # Stop the running application (if using pm2)
+          # Restart the server with pm2
           pm2 stop all || true
-
-          # Restart the server
           pm2 start index.js --name "node-server"
           EOF
+
+          # Cleanup
           rm -f private_key.pem
