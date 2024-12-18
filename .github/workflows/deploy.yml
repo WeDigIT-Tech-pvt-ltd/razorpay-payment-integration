@@ -21,14 +21,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Install dependencies
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
+      # Install pnpm
+      - name: Install pnpm
+        run: |
+          npm install -g pnpm
 
-      - name: Install dependencies
-        run: npm install
+      # Install dependencies
+      - name: Install dependencies with pnpm
+        run: pnpm install
+
+      # Build the application (if applicable)
+      - name: Build the application
+        run: pnpm run build
 
       # Deploy to EC2
       - name: Deploy to EC2
@@ -37,6 +41,7 @@ jobs:
         run: |
           echo "$SSH_PRIVATE_KEY" > private_key.pem
           chmod 600 private_key.pem
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
           ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
           # Stop the running application (if using pm2)
           pm2 stop all || true
@@ -47,8 +52,10 @@ jobs:
           # Pull the latest changes
           git pull origin main
 
-          # Install dependencies and restart the server
-          npm install --production
+          # Install dependencies with pnpm
+          pnpm install --prod
+
+          # Restart the server
           pm2 start index.js --name "node-server"
           EOF
           rm -f private_key.pem
