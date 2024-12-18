@@ -30,10 +30,6 @@ jobs:
       - name: Install dependencies with pnpm
         run: pnpm install
 
-      # Build the application (if applicable)
-      - name: Build the application
-        run: pnpm run build
-
       # Deploy to EC2
       - name: Deploy to EC2
         env:
