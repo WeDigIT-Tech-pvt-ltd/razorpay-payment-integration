@@ -1,0 +1,54 @@
+name: Deploy Node.js App to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Node.js Server
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: production
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_USER: ${{ secrets.EC2_USER }}
+      APP_PATH: ${{ secrets.APP_PATH }}
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Install dependencies
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      # Deploy to EC2
+      - name: Deploy to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+          # Stop the running application (if using pm2)
+          pm2 stop all || true
+
+          # Navigate to the application path
+          cd $APP_PATH
+
+          # Pull the latest changes
+          git pull origin main
+
+          # Install dependencies and restart the server
+          npm install --production
+          pm2 start index.js --name "node-server"
+          EOF
+          rm -f private_key.pem

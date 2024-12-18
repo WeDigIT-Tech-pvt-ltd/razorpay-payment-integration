@@ -10,7 +10,8 @@ const router = express.Router();
 const orderValidation = [
   body('amount').isFloat({ min: 1 }),
   body('currency').optional().isIn(Object.values(CURRENCY)),
-  body('notes').optional().isObject()
+  body('notes').optional().isObject(),
+  body('customerId').isNumeric(),
 ];
 
 const paymentVerificationValidation = [
