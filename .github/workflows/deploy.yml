@@ -47,10 +47,20 @@ jobs:
 
           # Connect to EC2 and deploy
           ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
-          # Install git and pm2 if not already installed using yum
+          # Update system packages
+          sudo yum update -y
+
+          # Install git
           if ! command -v git &> /dev/null; then
-            sudo yum update -y && sudo yum install -y git
+            sudo yum install -y git
           fi
+
+          # Install Node.js & npm
+          if ! command -v npm &> /dev/null; then
+            sudo amazon-linux-extras install -y nodejs
+          fi
+
+          # Install pm2 if not already installed
           if ! command -v pm2 &> /dev/null; then
             sudo npm install -g pm2
           fi
