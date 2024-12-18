@@ -26,27 +26,21 @@ jobs:
         run: |
           npm install -g pnpm
 
-      # Install dependencies
-      - name: Install dependencies with pnpm
-        run: pnpm install
+      # Set up SSH
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+          unset SSH_AUTH_SOCK  # Disable ssh-agent to ensure no other keys are used
 
       # Deploy to EC2
       - name: Deploy to EC2
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
-          # Create .ssh directory if it doesn't exist
-          mkdir -p ~/.ssh
-
-          # Add EC2 host to known_hosts
-          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
-
-          # Set up private key
-          echo "$SSH_PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-
-          # Connect to EC2 and deploy
-          ssh -o IdentitiesOnly=yes -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+          ssh -o IdentitiesOnly=yes -i ~/.ssh/id_rsa $EC2_USER@$EC2_HOST << 'EOF'
           
           export APP_PATH="subs-manage/backend"  # Export APP_PATH to the SSH session
           echo "Using APP_PATH: \$APP_PATH"  # Debug to ensure it's passed correctly
