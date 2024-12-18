@@ -81,7 +81,7 @@ jobs:
           # Initialize git repository if not already set up
           if [ ! -d ".git" ]; then
             git init
-            git remote add origin git@github.com:<your-repo-owner>/<your-repo-name>.git
+            git remote add origin git@github.com:WeDigIT-Tech-pvt-ltd/subs-management-backend.git
           fi
 
           # Pull latest changes
