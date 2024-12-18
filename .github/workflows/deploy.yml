@@ -50,38 +50,43 @@ jobs:
           # Update system packages
           sudo yum update -y
 
-          # Install git
+          # Install Git
           if ! command -v git &> /dev/null; then
             sudo yum install -y git
           fi
 
-          # Install Node.js & npm
+          # Manually install Node.js & npm using curl
           if ! command -v npm &> /dev/null; then
-            sudo amazon-linux-extras install -y nodejs
+            curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash
+            sudo yum install -y nodejs
           fi
 
-          # Install pm2 if not already installed
+          # Ensure pm2 is installed
           if ! command -v pm2 &> /dev/null; then
             sudo npm install -g pm2
           fi
 
-          # Navigate to the application path
-          mkdir -p $APP_PATH
-          cd $APP_PATH
+          # Ensure APP_PATH exists
+          if [ -z "$APP_PATH" ]; then
+            echo "APP_PATH is not set. Exiting."
+            exit 1
+          fi
+          mkdir -p "$APP_PATH"
+          cd "$APP_PATH"
 
-          # Initialize git repository if not already done
+          # Initialize git repository if not already set up
           if [ ! -d ".git" ]; then
             git init
             git remote add origin git@github.com:<your-repo-owner>/<your-repo-name>.git
           fi
 
-          # Pull the latest changes
+          # Pull latest changes
           git pull origin main
 
-          # Install dependencies with pnpm
+          # Install dependencies
           pnpm install --prod
 
-          # Restart the server with pm2
+          # Restart server with pm2
           pm2 stop all || true
           pm2 start index.js --name "node-server"
           EOF
