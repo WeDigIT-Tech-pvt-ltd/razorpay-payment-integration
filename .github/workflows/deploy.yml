@@ -46,7 +46,7 @@ jobs:
           chmod 600 private_key.pem
 
           # Connect to EC2 and deploy
-          ssh -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
+          ssh -o IdentitiesOnly=yes -i private_key.pem $EC2_USER@$EC2_HOST << 'EOF'
           
           export APP_PATH="subs-manage/backend"  # Export APP_PATH to the SSH session
           echo "Using APP_PATH: \$APP_PATH"  # Debug to ensure it's passed correctly
