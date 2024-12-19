@@ -47,7 +47,7 @@ exports.createOrder = async (req, res) => {
       receipt,
       pg_options: {
         subscription_id: razorpayOrder.id,
-        name: plan.name,
+        name: "WeDigIT Tech pvt ltd",
         description: plan.description,
         recurring: true,
         callback_url: `${process.env.CALLBACK_URL}?orderId=${razorpayOrder.id}`,
