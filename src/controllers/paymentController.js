@@ -103,6 +103,7 @@ exports.verifyPayment = async (req, res) => {
 
     const { razorpay_signature, razorpay_payment_id, error } = req.body;
 
+    console.log(error, 'dss');
     const { orderId } = req.query;
 
     console.log(razorpay_payment_id + "|" + orderId, razorpay_signature, process.env.RAZORPAY_KEY_SECRET);
