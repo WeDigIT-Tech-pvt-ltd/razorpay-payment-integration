@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const planRoutes = require('./routes/planRoute');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -27,7 +28,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/plan', paymentRoutes);
+app.use('/api/plan', planRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
