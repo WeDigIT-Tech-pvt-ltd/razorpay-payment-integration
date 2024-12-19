@@ -3,6 +3,7 @@ const subscriptionRepository = require('../repositories/subscriptionRepository')
 const planRepository = require('../repositories/planRepository');
 const { SubscriptionError } = require('../utils/errors');
 const paymentRepository = require('../repositories/paymentRepository');
+const { PAYMENT_STATUS } = require('../config/constants');
 
 class SubscriptionService {
   async createSubscription(planId, customerId) {
