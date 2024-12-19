@@ -28,7 +28,7 @@ exports.createOrder = async (req, res) => {
     if(!customer) customer = await customerRepository.create({ id: generateObjectId(),  name, phone, email });
 
     // Create Razorpay order
-    const { razorpayOrder, plan } = subscriptionService.createSubscription(planId, customer.id);
+    const { razorpayOrder, plan } = await subscriptionService.createSubscription(planId, customer.id);
 
     // Save order in database
     await orderRepository.create({
