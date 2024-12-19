@@ -13,7 +13,7 @@ class SubscriptionService {
       }
 
       const subscription = await razorpay.subscriptions.create({
-        plan_id: planId,
+        plan_id: plan.pgPlanId,
         customer_id: customerId,
         total_count: 12, // Default to yearly subscription
         customer_notify: 1
@@ -33,7 +33,7 @@ class SubscriptionService {
 
       return { razorpayOrder: subscription, plan };
     } catch (error) {
-      throw new SubscriptionError('Failed to create subscription: ' + error);
+      throw new SubscriptionError('Failed to create subscription: ' + JSON.stringify(error));
     }
   }
 
