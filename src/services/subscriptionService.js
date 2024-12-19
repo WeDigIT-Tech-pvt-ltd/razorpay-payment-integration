@@ -12,6 +12,8 @@ class SubscriptionService {
         throw new SubscriptionError('Plan not found');
       }
 
+      console.log(plan.pgPlanId, 'sdss');
+
       const subscription = await razorpay.subscriptions.create({
         plan_id: plan.pgPlanId,
         customer_id: customerId,
