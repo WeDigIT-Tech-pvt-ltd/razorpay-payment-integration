@@ -105,13 +105,6 @@ exports.verifyPayment = async (req, res) => {
     if (validateWebhookSignature(razorpay_payment_id + "|" + orderId, razorpay_signature, process.env.RAZORPAY_KEY_SECRET) || razorpay_signature === 'webhook_verified') {
       const payment = await razorpay.payments.fetch(razorpay_payment_id);
 
-      if (payment.order_id !== orderId) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Payment verification failed' 
-        });
-      }
-
       // Update order status
       await orderRepository.updateStatus(orderId, 'paid');
 

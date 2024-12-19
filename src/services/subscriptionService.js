@@ -88,9 +88,6 @@ class SubscriptionService {
 
       // Create subscription after successful payment if it's a subscription payment
       if (payment.subscription_id) {
-        const planId = payment.notes?.plan_id;
-        const customerId = payment.customer_id;
-        
         let rpSubs = razorpay.subscriptions.fetch(payment.subscription_id);
         await subscriptionRepository.updateStatus(payment.subscription_id, (await rpSubs).status);
       }
