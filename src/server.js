@@ -27,6 +27,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/plan', paymentRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
