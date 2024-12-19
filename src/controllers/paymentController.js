@@ -1,6 +1,6 @@
 const razorpay = require('../config/razorpay');
 const { validationResult } = require('express-validator');
-const { generateReceiptId, isValidEmail, validateWebhookSignature } = require('../utils/paymentUtils');
+const { generateReceiptId, isValidEmail, validateWebhookSignature, generateObjectId } = require('../utils/paymentUtils');
 const orderRepository = require('../repositories/orderRepository');
 const paymentRepository = require('../repositories/paymentRepository');
 const customerRepository = require('../repositories/customerRepository');
@@ -25,7 +25,7 @@ exports.createOrder = async (req, res) => {
       });
 
     let customer = await customerRepository.findByEmail(email);
-    if(!customer) customer = await customerRepository.create({ name, phone, email });
+    if(!customer) customer = await customerRepository.create({ id: generateObjectId(),  name, phone, email });
 
     // Create Razorpay order
     const { razorpayOrder, plan } = subscriptionService.createSubscription(planId, customer.id);
@@ -106,7 +106,7 @@ exports.verifyPayment = async (req, res) => {
     if (validateWebhookSignature(razorpay_payment_id + "|" + orderId, process.env.RAZORPAY_SECRET) || razorpay_signature === 'webhook_verified') {
       const payment = await razorpay.payments.fetch(razorpay_payment_id);
 
-      
+
       if (payment.order_id !== orderId) {
         return res.status(400).json({ 
           success: false, 

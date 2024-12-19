@@ -22,3 +22,12 @@ exports.isValidEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
+
+exports.generateObjectId = () => {
+  const timestamp = Math.floor(Date.now() / 1000).toString(16); // 4-byte timestamp
+  const random = Array.from({ length: 16 }, () =>
+    Math.floor(Math.random() * 16).toString(16)
+  ).join(''); // 8-byte random hex string
+  const objectId = (timestamp + random).substring(0, 24); // Ensure 12 bytes (24 hex chars)
+  return objectId;
+}
