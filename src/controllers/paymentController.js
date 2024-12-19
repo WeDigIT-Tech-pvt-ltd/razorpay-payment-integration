@@ -113,7 +113,7 @@ exports.verifyPayment = async (req, res) => {
       await paymentRepository.create({
         id: razorpay_payment_id,
         orderId,
-        customerId: payment.notes?.customer_id,
+        customerId: payment.notes?.customerId,
         amount: payment.amount / 100, // Convert from paise to rupees
         currency: payment.currency,
         status: payment.status,
