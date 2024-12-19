@@ -10,7 +10,7 @@ const orderValidation = [
   body('externalId').isString().notEmpty(),
   body('planId').isString().notEmpty(),
   body('name').isString().notEmpty(),
-  body('phone').isMobilePhone('hi-IN').notEmpty(),
+  body('phone').isString().notEmpty(),
   body('email').isEmail().notEmpty(),
 ];
 
