@@ -9,7 +9,7 @@ const router = express.Router();
 const orderValidation = [
   body('planId').isString().notEmpty(),
   body('name').isString().notEmpty(),
-  body('phone').isString().notEmpty(),
+  body('phone').isString(),
   body('email').isEmail().notEmpty(),
 ];
 
