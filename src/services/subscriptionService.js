@@ -2,6 +2,7 @@ const razorpay = require('../config/razorpay');
 const subscriptionRepository = require('../repositories/subscriptionRepository');
 const planRepository = require('../repositories/planRepository');
 const { SubscriptionError } = require('../utils/errors');
+const paymentRepository = require('../repositories/paymentRepository');
 
 class SubscriptionService {
   async createSubscription(planId, customerId) {
@@ -86,13 +87,8 @@ class SubscriptionService {
         const planId = payment.notes?.plan_id;
         const customerId = payment.customer_id;
         
-        if (planId && customerId) {
-          await subscriptionService.createSubscriptionAfterPayment(
-            payment,
-            planId,
-            customerId
-          );
-        }
+        let rpSubs = razorpay.subscriptions.fetch(payment.subscription_id);
+        await subscriptionRepository.updateStatus(payment.subscription_id, (await rpSubs).status);
       }
     } catch (error) {
       console.error('Payment capture handling error:', error);
