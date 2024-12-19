@@ -7,7 +7,6 @@ const router = express.Router();
 
 // Validation middleware
 const orderValidation = [
-  body('externalId').isString().notEmpty(),
   body('planId').isString().notEmpty(),
   body('name').isString().notEmpty(),
   body('phone').isString().notEmpty(),
