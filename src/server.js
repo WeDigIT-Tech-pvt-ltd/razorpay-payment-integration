@@ -18,11 +18,12 @@ app.use(morgan('dev'));
 
 // Parse JSON requests, except for webhook route
 app.use((req, res, next) => {
-  if (req.originalUrl === '/api/payment/webhook') {
-    next();
-  } else {
-    express.json()(req, res, next);
-  }
+  // if (req.originalUrl === '/api/payment/webhook') {
+  //   next();
+  // } else {
+    
+  // }
+  express.json()(req, res, next);
 });
 
 // Routes
