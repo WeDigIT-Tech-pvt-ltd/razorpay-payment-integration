@@ -3,7 +3,7 @@ const crypto = require('crypto');
 exports.validateWebhookSignature = (webhookBody, signature, secret) => {
   const expectedSignature = crypto
     .createHmac('sha256', secret)
-    .update(JSON.stringify(webhookBody))
+    .update(webhookBody)
     .digest('hex');
   
   return expectedSignature === signature;
