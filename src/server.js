@@ -26,6 +26,8 @@ app.use((req, res, next) => {
   express.json()(req, res, next);
 });
 
+app.use(express.urlencoded({ extended: true }))
+
 // Routes
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/payment', paymentRoutes);
