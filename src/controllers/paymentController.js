@@ -34,7 +34,7 @@ exports.createOrder = async (req, res) => {
     await orderRepository.create({
       id: razorpayOrder.id,
       customerId: customer.id,
-      amount: amount,
+      amount: plan.amount,
       receipt,
       status: 'created',
       metadata: razorpayOrder

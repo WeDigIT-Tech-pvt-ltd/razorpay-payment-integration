@@ -19,6 +19,7 @@ const plans = pgTable('plans', {
   interval: varchar('interval', { length: 20 }).notNull(), // daily, weekly, monthly, yearly
   intervalCount: integer('interval_count').notNull(),
   metadata: jsonb('metadata'),
+  taxPer: decimal('tax_per', { precision: 10, scale: 2 }).notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });

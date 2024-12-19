@@ -1,0 +1,1 @@
+ALTER TABLE "plans" ADD COLUMN "tax_per" numeric(10, 2) NOT NULL;
