@@ -12,7 +12,7 @@ class SubscriptionService {
         throw new SubscriptionError('Plan not found');
       }
 
-      const subscription = razorpay.subscriptions.create({
+      const subscription = await razorpay.subscriptions.create({
         plan_id: planId,
         customer_id: customerId,
         total_count: 12, // Default to yearly subscription
