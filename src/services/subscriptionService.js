@@ -12,16 +12,14 @@ class SubscriptionService {
         throw new SubscriptionError('Plan not found');
       }
 
-      console.log(plan.pgPlanId, 'sdss');
-
       const subscription = await razorpay.subscriptions.create({
         plan_id: plan.pgPlanId,
-        customer_id: customerId,
         total_count: 12, // Default to yearly subscription
-        customer_notify: 1
+        customer_notify: 1,
+        notes: {
+          customerId,
+        }
       });
-
-      console.log('sds', subscription);
 
       await subscriptionRepository.create({
         id: subscription.id,
