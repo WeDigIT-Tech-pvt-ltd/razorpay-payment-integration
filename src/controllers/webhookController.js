@@ -4,7 +4,7 @@ const { validateWebhookSignature } = require('../utils/paymentUtils');
 exports.handleWebhook = async (req, res) => {
   try {
     const webhookSignature = req.headers['x-razorpay-signature'];
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_KEY;
 
     if (!validateWebhookSignature(req.body, webhookSignature, webhookSecret)) {
       return res.status(400).json({ success: false, error: 'Invalid webhook signature' });

@@ -101,7 +101,7 @@ exports.verifyPayment = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { razorpay_signature, razorpay_payment_id, error } = reqBody;
+    const { razorpay_signature, razorpay_payment_id, error } = req.body;
 
     const { orderId } = req.query;
 
