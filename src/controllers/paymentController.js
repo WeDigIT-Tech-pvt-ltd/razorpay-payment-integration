@@ -59,6 +59,7 @@ exports.createOrder = async (req, res) => {
         },
         notes: {
             plan_id: plan.id,
+            customerId: customer.id,
             reciept: receipt,
         },
         key: process.env.RAZORPAY_KEY_ID
