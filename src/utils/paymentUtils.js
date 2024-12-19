@@ -17,3 +17,8 @@ exports.formatAmount = (amount) => {
 exports.generateReceiptId = () => {
   return `rcpt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
+
+exports.isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}

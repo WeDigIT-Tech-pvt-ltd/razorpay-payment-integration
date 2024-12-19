@@ -17,6 +17,13 @@ class CustomerRepository {
     return customer;
   }
 
+  async findByEmail(email) {
+    const [customer] = await db.select()
+      .from(customers)
+      .where(eq(customers.email, email));
+    return customer;
+  }
+
   async update(id, customerData) {
     const [customer] = await db.update(customers)
       .set({ ...customerData, updatedAt: new Date() })

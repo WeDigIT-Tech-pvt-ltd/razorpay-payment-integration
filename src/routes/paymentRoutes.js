@@ -1,27 +1,26 @@
 const express = require('express');
-const { body } = require('express-validator');
+const { body, query } = require('express-validator');
 const paymentController = require('../controllers/paymentController');
 const webhookController = require('../controllers/webhookController');
-const { CURRENCY } = require('../config/constants');
 
 const router = express.Router();
 
 // Validation middleware
 const orderValidation = [
-  body('amount').isFloat({ min: 1 }),
-  body('currency').optional().isIn(Object.values(CURRENCY)),
-  body('notes').optional().isObject(),
-  body('customerId').isNumeric(),
+  body('externalId').isString().notEmpty(),
+  body('planId').isString().notEmpty(),
+  body('name').isString().notEmpty(),
+  body('phone').isMobilePhone('hi-IN').notEmpty(),
+  body('email').isEmail().notEmpty(),
 ];
 
 const paymentVerificationValidation = [
-  body('orderId').isString().notEmpty(),
-  body('paymentId').isString().notEmpty()
+  query('orderId').isString().notEmpty(),
 ];
 
 // Payment routes
 router.post('/orders', orderValidation, paymentController.createOrder);
-router.post('/verify', paymentVerificationValidation, paymentController.verifyPayment);
+router.get('/verify', paymentVerificationValidation, paymentController.verifyPayment);
 router.get('/payments/:paymentId', paymentController.getPaymentDetails);
 
 // Webhook route

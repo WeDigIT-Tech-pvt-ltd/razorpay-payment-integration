@@ -21,11 +21,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Install pnpm
-      - name: Install pnpm
-        run: |
-          npm install -g pnpm
-
       # Set up SSH
       - name: Setup SSH
         run: |
@@ -86,7 +81,7 @@ jobs:
 
           # Restart server with pm2
           pm2 stop all || true
-          pm2 start index.js --name "node-server"
+          pm2 start src/server.js --name "node-server"
           EOF
 
           # Cleanup

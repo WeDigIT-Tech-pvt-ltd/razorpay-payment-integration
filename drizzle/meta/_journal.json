@@ -15,6 +15,41 @@
       "when": 1734432402383,
       "tag": "0001_messy_stingray",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1734529056340,
+      "tag": "0002_marvelous_madame_hydra",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1734529095857,
+      "tag": "0003_pretty_captain_britain",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1734584271774,
+      "tag": "0004_bitter_stranger",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1734584322815,
+      "tag": "0005_nifty_scalphunter",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1734584405158,
+      "tag": "0006_strange_carmella_unuscione",
+      "breakpoints": true
     }
   ]
 }

@@ -4,21 +4,21 @@ const planRepository = require('../repositories/planRepository');
 const { SubscriptionError } = require('../utils/errors');
 
 class SubscriptionService {
-  async createSubscriptionAfterPayment(payment, planId, customerId) {
+  async createSubscription(planId, customerId) {
     try {
       const plan = await planRepository.findById(planId);
       if (!plan) {
         throw new SubscriptionError('Plan not found');
       }
 
-      const subscription = await razorpay.subscriptions.create({
+      const subscription = razorpay.subscriptions.create({
         plan_id: planId,
         customer_id: customerId,
         total_count: 12, // Default to yearly subscription
         customer_notify: 1
       });
 
-      return await subscriptionRepository.create({
+      await subscriptionRepository.create({
         id: subscription.id,
         planId,
         customerId,
@@ -27,6 +27,8 @@ class SubscriptionService {
         currentPeriodEnd: new Date(subscription.current_end * 1000),
         metadata: subscription
       });
+
+      return { razorpayOrder: subscription, plan };
     } catch (error) {
       throw new SubscriptionError('Failed to create subscription: ' + error.message);
     }
@@ -67,6 +69,79 @@ class SubscriptionService {
       });
     } catch (error) {
       throw new SubscriptionError('Failed to cancel subscription: ' + error.message);
+    }
+  }
+
+
+  async handlePaymentCaptured(payment) {
+    try {
+      await paymentRepository.updateStatus(payment.id, PAYMENT_STATUS.CAPTURED);
+      
+      if (payment.order_id) {
+        await orderRepository.updateStatus(payment.order_id, 'paid');
+      }
+
+      // Create subscription after successful payment if it's a subscription payment
+      if (payment.subscription_id) {
+        const planId = payment.notes?.plan_id;
+        const customerId = payment.customer_id;
+        
+        if (planId && customerId) {
+          await subscriptionService.createSubscriptionAfterPayment(
+            payment,
+            planId,
+            customerId
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Payment capture handling error:', error);
+      throw error;
+    }
+  }
+
+  async handleSubscriptionActivated(subscription) {
+    try {
+      await subscriptionRepository.updateStatus(subscription.id, 'active');
+    } catch (error) {
+      console.error('Subscription activation handling error:', error);
+      throw error;
+    }
+  }
+
+  async handleSubscriptionPending(subscription) {
+    try {
+      await subscriptionRepository.updateStatus(subscription.id, 'pending');
+    } catch (error) {
+      console.error('Subscription pending handling error:', error);
+      throw error;
+    }
+  }
+
+  async handleSubscriptionCharged(subscription) {
+    try {
+      await subscriptionRepository.updateStatus(subscription.id, 'active');
+    } catch (error) {
+      console.error('Subscription pending handling error:', error);
+      throw error;
+    }
+  }
+
+  async handleSubscriptionCancelled(subscription) {
+    try {
+      await subscriptionRepository.updateStatus(subscription.id, 'cancelled');
+    } catch (error) {
+      console.error('Subscription pending handling error:', error);
+      throw error;
+    }
+  }
+
+  async handleSubscriptionPending(subscription) {
+    try {
+      await subscriptionRepository.updateStatus(subscription.id, 'pending');
+    } catch (error) {
+      console.error('Subscription pending handling error:', error);
+      throw error;
     }
   }
 }

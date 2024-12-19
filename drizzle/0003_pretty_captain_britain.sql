@@ -1,0 +1,1 @@
+ALTER TABLE "plans" RENAME COLUMN "" TO "pg_plan_id";

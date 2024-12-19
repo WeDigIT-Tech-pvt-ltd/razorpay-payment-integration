@@ -1,0 +1,1 @@
+ALTER TABLE "plans" ADD COLUMN "" text NOT NULL;

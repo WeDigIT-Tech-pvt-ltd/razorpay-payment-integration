@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "webhook" varchar(2083) DEFAULT '' NOT NULL;

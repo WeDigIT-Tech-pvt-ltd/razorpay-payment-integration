@@ -13,6 +13,7 @@ const plans = pgTable('plans', {
     .array()
     .notNull()
     .default(sql`ARRAY[]::text[]`),
+  pgPlanId: text('pg_plan_id').notNull(),
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
   currency: varchar('currency', { length: 3 }).notNull(),
   interval: varchar('interval', { length: 20 }).notNull(), // daily, weekly, monthly, yearly

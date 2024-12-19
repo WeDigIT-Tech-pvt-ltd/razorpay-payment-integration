@@ -4,7 +4,7 @@ const customers = pgTable('customers', {
   id: varchar('id').primaryKey(),
   email: text('email').notNull().unique(),
   name: text('name'),
-  phone: varchar('phone', { length: 15 }),
+  phone: varchar('phone'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });

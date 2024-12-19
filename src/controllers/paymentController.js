@@ -1,45 +1,65 @@
 const razorpay = require('../config/razorpay');
 const { validationResult } = require('express-validator');
-const { CURRENCY } = require('../config/constants');
-const { formatAmount, generateReceiptId } = require('../utils/paymentUtils');
+const { generateReceiptId, isValidEmail, validateWebhookSignature } = require('../utils/paymentUtils');
 const orderRepository = require('../repositories/orderRepository');
 const paymentRepository = require('../repositories/paymentRepository');
+const customerRepository = require('../repositories/customerRepository');
+const subscriptionRepository = require('../repositories/subscriptionRepository');
+const subscriptionService = require('../services/subscriptionService');
 
 exports.createOrder = async (req, res) => {
   try {
+    const receipt = generateReceiptId();
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { amount, currency = CURRENCY.INR, notes, customerId } = req.body;
-    const receipt = generateReceiptId();
+    const { planId, name = '', email, phone = '9999999999' } = req.body;
+
+    if(!email || !isValidEmail(email)) 
+      return res.status(404).json({ 
+        success: false, 
+        error: 'Customer Email is required'
+      });
+
+    let customer = await customerRepository.findByEmail(email);
+    if(!customer) customer = await customerRepository.create({ name, phone, email });
 
     // Create Razorpay order
-    const razorpayOrder = await razorpay.orders.create({
-      amount: formatAmount(amount),
-      currency,
-      receipt,
-      notes,
-      payment_capture: 1
-    });
+    const { razorpayOrder, plan } = subscriptionService.createSubscription(planId, customer.id);
 
     // Save order in database
-    const order = await orderRepository.create({
+    await orderRepository.create({
       id: razorpayOrder.id,
-      customerId,
+      customerId: customer.id,
       amount: amount,
-      currency,
       receipt,
       status: 'created',
-      notes: notes || {},
       metadata: razorpayOrder
     });
 
     res.status(201).json({
       success: true,
-      order,
-      key: process.env.RAZORPAY_KEY_ID
+      receipt,
+      pg_options: {
+        subscription_id: razorpayOrder.id,
+        name: plan.name,
+        description: plan.description,
+        recurring: true,
+        callback_url: `${process.env.CALLBACK_URL}?orderId=${order.id}`,
+        prefill: {
+            name: name,
+            email: email,
+            contact: phone ? phone : "9999999999",
+        },
+        notes: {
+            plan_id: plan.id,
+            reciept: receipt,
+        },
+        key: process.env.RAZORPAY_KEY_ID
+      }
     });
   } catch (error) {
     console.error('Create order error:', error);
@@ -79,36 +99,52 @@ exports.verifyPayment = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { orderId, paymentId } = req.body;
-    const payment = await razorpay.payments.fetch(paymentId);
+    const { razorpay_signature, razorpay_payment_id, error } = reqBody;
 
-    if (payment.order_id !== orderId) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Payment verification failed' 
+    const { orderId } = req.query;
+
+    if (validateWebhookSignature(razorpay_payment_id + "|" + orderId, process.env.RAZORPAY_SECRET) || razorpay_signature === 'webhook_verified') {
+      const payment = await razorpay.payments.fetch(razorpay_payment_id);
+
+      if (payment.order_id !== orderId) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Payment verification failed' 
+        });
+      }
+
+      // Update order status
+      await orderRepository.updateStatus(orderId, 'paid');
+
+      //create a new payment entry
+      await paymentRepository.create({
+        id: razorpay_payment_id,
+        orderId,
+        customerId: payment.customer_id,
+        amount: payment.amount / 100, // Convert from paise to rupees
+        currency: payment.currency,
+        status: payment.status,
+        method: payment.method,
+        description: payment.description,
+        metadata: payment
       });
+
+      //update the subscription station
+      if (payment.subscription_id) {
+        let rpSubs = razorpay.subscriptions.fetch(payment.subscription_id);
+        await subscriptionRepository.updateStatus(payment.subscription_id, (await rpSubs).status);
+      }
+
+      res.json({ 
+        success: true, 
+        payment 
+      });     
+    } else return res.status(500).json({  success: false, error: 'Payment verification failed' });
+
+    if(error) {
+        res.redirect(`&error=${error.description}`);
+        return;
     }
-
-    // Update order status
-    await orderRepository.updateStatus(orderId, 'paid');
-
-    // Save payment details
-    await paymentRepository.create({
-      id: paymentId,
-      orderId,
-      customerId: payment.customer_id,
-      amount: payment.amount / 100, // Convert from paise to rupees
-      currency: payment.currency,
-      status: payment.status,
-      method: payment.method,
-      description: payment.description,
-      metadata: payment
-    });
-
-    res.json({ 
-      success: true, 
-      payment 
-    });
   } catch (error) {
     console.error('Verify payment error:', error);
     res.status(500).json({ success: false, error: 'Payment verification failed' });
