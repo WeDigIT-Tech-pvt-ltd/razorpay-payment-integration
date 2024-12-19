@@ -96,11 +96,6 @@ exports.getPaymentDetails = async (req, res) => {
 
 exports.verifyPayment = async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
     const { razorpay_signature, razorpay_payment_id, error } = req.body;
 
     console.log(error, 'dss');
