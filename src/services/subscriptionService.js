@@ -33,7 +33,7 @@ class SubscriptionService {
 
       return { razorpayOrder: subscription, plan };
     } catch (error) {
-      throw new SubscriptionError('Failed to create subscription: ' + error.message);
+      throw new SubscriptionError('Failed to create subscription: ' + error);
     }
   }
 
