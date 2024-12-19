@@ -20,7 +20,8 @@ class PlanRepository {
   async findByProductId(pId) {
     const plan = await db.select()
       .from(plans)
-      .where(eq(plans.productId, pId));
+      .where(eq(plans.productId, pId))
+      .orderBy(plans.createdAt);
     return plan;
   }
 }
