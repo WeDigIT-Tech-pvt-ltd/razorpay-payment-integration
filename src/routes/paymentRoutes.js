@@ -19,7 +19,7 @@ const paymentVerificationValidation = [
 
 // Payment routes
 router.post('/orders', orderValidation, paymentController.createOrder);
-router.post('/verify', paymentVerificationValidation, paymentController.verifyPayment);
+router.post('/verify', paymentController.verifyPayment);
 router.get('/payments/:paymentId', paymentController.getPaymentDetails);
 
 // Webhook route
