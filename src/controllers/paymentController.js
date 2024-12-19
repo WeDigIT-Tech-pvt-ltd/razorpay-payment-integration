@@ -51,6 +51,7 @@ exports.createOrder = async (req, res) => {
         description: plan.description,
         recurring: true,
         callback_url: `${process.env.CALLBACK_URL}?orderId=${razorpayOrder.id}`,
+        redirect: true,
         prefill: {
             name: name,
             email: email,
