@@ -6,6 +6,7 @@ exports.handleWebhook = async (req, res) => {
     const webhookSignature = req.headers['x-razorpay-signature'];
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_KEY;
 
+    console.log(req.body, webhookSignature, webhookSecret);
     if (!validateWebhookSignature(req.body, webhookSignature, webhookSecret)) {
       return res.status(400).json({ success: false, error: 'Invalid webhook signature' });
     }
