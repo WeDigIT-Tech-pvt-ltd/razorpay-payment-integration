@@ -6,6 +6,7 @@ const paymentRepository = require('../repositories/paymentRepository');
 const customerRepository = require('../repositories/customerRepository');
 const subscriptionRepository = require('../repositories/subscriptionRepository');
 const subscriptionService = require('../services/subscriptionService');
+const { CURRENCY } = require('../config/constants');
 
 exports.createOrder = async (req, res) => {
   try {
@@ -36,6 +37,7 @@ exports.createOrder = async (req, res) => {
       customerId: customer.id,
       amount: plan.amount,
       receipt,
+      currency: CURRENCY.INR,
       status: 'created',
       metadata: razorpayOrder
     });
