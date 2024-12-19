@@ -5,7 +5,6 @@ const planController = require('../controllers/planController');
 
 const router = express.Router();
 
-
 // Validation middleware
 const planPostValidation = [
     body('period').isIn(['daily', 'weekly', 'monthly', 'yearly']),
@@ -15,12 +14,13 @@ const planPostValidation = [
     body('item.description').isString().notEmpty()
 ];
 
-
 // Validation middleware
 const planGetValidation = [
     param('planId').isString().notEmpty(),
-  ];
+];
 
 // Routes
 router.post('/plans', planPostValidation, planController.createPlan);
 router.get('/plans/:planId', planGetValidation, planController.getPlans);
+
+module.exports = router;
