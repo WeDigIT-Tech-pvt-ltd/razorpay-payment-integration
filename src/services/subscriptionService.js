@@ -19,6 +19,8 @@ class SubscriptionService {
         customer_notify: 1
       });
 
+      console.log('sds', subscription);
+
       await subscriptionRepository.create({
         id: subscription.id,
         planId,
