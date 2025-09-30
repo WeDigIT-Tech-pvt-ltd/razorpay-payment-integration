@@ -48,14 +48,17 @@ NODE_ENV=development
 
 ## Quickstart
 
-```### 1. Clone the repo
+### 1. Clone the repo
 
+```
 git clone https://github.com/WeDigIT-Tech-pvt-ltd/razorpay-payment-integration.git
 
 cd razorpay-payment-integration
+```
 
 ### 2. Install dependencies
 
+```
 npm install
 
 or
@@ -65,25 +68,33 @@ pnpm install
 or
 
 yarn
+```
 
 ### 3. Create Postgres Database
 
+```
 createdb razorpay_integration
+```
 
 ### 4. Add `.env`
 
+```
 Use the exact variable names above.
+```
 
 ### 5. Run Database Migrations
 
+```
 npm run migrate
 
 or using drizzle-kit
 
 npx drizzle-kit migrate:dev --connection "$DATABASE_URL" --schema ./src/db/schema.ts
+```
 
 ### 6. Start the Server
 
+```
 npm run dev
 
 or
@@ -93,21 +104,24 @@ node index.js
 Server will be available at `http://localhost:3000`.
 ```
 ---
-```
+
 ## Local Webhook Testing (ngrok + signature)
 
 ### 1. Expose local server
 
-ngrok http 3000
+```ngrok http 3000```
 
 ### 2. Configure Razorpay Webhook in Dashboard
 
+```
 - URL: `https://<ngrok-id>.ngrok.io/webhook/razorpay`
 - Webhook secret: set to `RAZORPAY_WEBHOOK_KEY`
 - Subscribe to events: `subscription.charged`, `payment.captured`, `subscription.cancelled`, etc.
+```
 
 ### 3. Send a signed test webhook
 
+```
 cat > payload.json <<'JSON'
 {
 "event": "payment.captured",
@@ -150,27 +164,34 @@ GET /subscriptions/:id — fetch subscription state
 ## Testing Subscriptions
 
 ```
-Create a Plan in Razorpay Dashboard or via API.
+- Create a Plan in Razorpay Dashboard or via API.
 
-Call POST /api/subscriptions to create a subscription.
+- Call POST /api/subscriptions to create a subscription.
 
-Use Razorpay Checkout in test mode or trigger flows via Dashboard.
+- Use Razorpay Checkout in test mode or trigger flows via Dashboard.
 
-Verify webhook events update the DB correctly.
+- Verify webhook events update the DB correctly.
 ```
 ---
 
 ## Troubleshooting
 
-```
 Webhook signature verification fails:
+
+```
 Ensure RAZORPAY_WEBHOOK_KEY matches Dashboard
 Use raw request body for HMAC computation
+```
 
 DB connection issues:
+
+```
 Confirm DATABASE_URL and Postgres access
+```
 
 Subscription creation errors:
+
+```
 Verify RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET and test keys
 ```
 ---
